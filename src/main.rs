@@ -81,13 +81,18 @@ where
 }
 
 impl<Iter> Progress<Iter, Bounded> {
-    fn with_delims(self, delims: (char, char)) -> Progress<Iter, Bounded> {
+    fn with_delim(self, delim: char) -> Progress<Iter, Bounded> {
         Progress {
             iter: self.iter,
             i: self.i,
             bound: Bounded {
                 bound: self.bound.bound,
-                delims,
+                delims: match delim {
+                    '[' => ('[', ']'),
+                    '{' => ('{', '}'),
+                    '<' => ('<', '>'),
+                    _ => ('[', ']'),
+                },
             },
         }
     }
@@ -109,7 +114,7 @@ where
 
 fn main() {
     let v = (0..77).collect::<Vec<i32>>();
-    for n in v.iter().progress().with_bounds().with_delims(('[', ']')) {
+    for n in v.iter().progress().with_bounds().with_delim('{') {
         expensive_calc(n)
     }
 }
